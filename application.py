@@ -1,10 +1,12 @@
-from flask import Flask, make_response, jsonify, request, render_template, Response
-from flask_cors import CORS
-from bson import ObjectId, json_util
 import requests
 import datetime
 import os
 import certifi
+import asyncio
+import httpx
+from flask import Flask, make_response, jsonify, request, render_template, Response
+from flask_cors import CORS
+from bson import ObjectId, json_util
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
@@ -22,6 +24,66 @@ MONGODB_URI = os.environ['MONGODB_URI']
 # Connect to your MongoDB cluster:
 client = MongoClient(MONGODB_URI, ssl=True,
                      tlsCAFile=ca)
+
+
+async def remove_transaction_DB(id):
+    client.db.transactions.delete_one({"_id": ObjectId(id)})
+
+
+async def change_transaction_DB(id, type, date, cash, desc, type_especify, latitude, longitude):
+    client.db.transactions.update_one({"_id": ObjectId(id)}, {"$set": {
+        "type": type,
+        "date": date,
+        "cash": cash,
+        "desc": desc,
+        "type_especify": type_especify,
+        "latitude": latitude,
+        "longitude": longitude
+    }})
+
+
+async def transactionsDB(uid):
+    response = client.db.transactions.find({"uid": uid})
+    return response
+
+
+async def insert_transaction(uid, type, type_especify, date, cash, desc, latitude, longitude):
+    client.db.transactions.insert_one({
+        "uid": uid,
+        "type": type,
+        "type_especify": type_especify,
+        "date": date,
+        "cash": cash,
+        "desc": desc,
+        "latitude": latitude,
+        "longitude": longitude
+    })
+
+
+async def usuariosbd(uid):
+
+    transaction = client.db.users.find({"uid": uid})
+    response = json_util.dumps(transaction)
+
+    return response
+
+
+async def changeDBuser(uid, display_name, photoURL, sexo):
+    client.db.users.update_one({'uid': uid}, {"$set": {
+        'name': display_name,
+        'photo': photoURL,
+        'sexo': sexo,
+    }})
+
+
+async def inserDBuser(display_name, email, photoURL, sexo, uid):
+    client.db.users.insert_one({
+        'name': display_name,
+        'email': email,
+        'photo': photoURL,
+        'sexo': sexo,
+        'uid': uid,
+    })
 
 
 def dropDB():
@@ -55,44 +117,48 @@ def get_cnpj():
     return make_response(response.text)
 
 
+@application.route('/getUser', methods=['GET'])
+async def get_user():
+    try:
+        headers = {"Content-Type": "application/json"}
+        uid = request.args.get('uid')
+        response = await usuariosbd(uid)
+        return Response(response, mimetype='application/json', headers=headers)
+    except:
+        return bad_request()
+
+
 @application.route('/user', methods=['POST', 'PUT', 'DELETE'])
-def insert():
+async def insert():
+
     try:
         display_name = request.json['displayName']
         email = request.json['email']
         photoURL = request.json['photoURL']
         sexo = request.json['sexo']
         uid = request.json['uid']
-        if request.method == 'POST' and (email and uid):
+        haveuser = await usuariosbd(uid)
 
-            client.db.users.insert_one({
-                'name': display_name,
-                'email': email,
-                'photo': photoURL,
-                'sexo': sexo,
-                'uid': uid,
-            })
+        if request.method == 'POST' and (email and uid and len(haveuser) <= 2):
 
-            return make_response(jsonify(message=f"User {uid} added successfully"))
+            await inserDBuser(display_name, email, photoURL, sexo, uid)
+
+            return make_response(jsonify(message=f"User added successfully"))
         elif request.method == 'PUT' and uid:
-            client.db.users.update_one({'uid': uid}, {"$set": {
-                'name': display_name,
-                'photo': photoURL,
-                'sexo': sexo,
-            }})
-            return make_response(jsonify(message=f"User {uid} changed successfully",
-                                         data=uid))
+            await changeDBuser(uid, display_name, photoURL, sexo)
+            return make_response(jsonify(message=f"User changed successfully"))
         elif request.method == 'DELETE' and uid:
             client.db.users.delete_one({'uid': uid})
-            return make_response(jsonify(message=f"User {uid} removed successfully"))
+            return make_response(jsonify(message=f"User removed successfully"))
         else:
-            return bad_request()
+            return not_found()
+
     except:
-        return not_found()
+        return bad_request()
 
 
-@ application.route('/transaction', methods=['POST'])
-def transaction():
+@application.route('/transaction', methods=['POST'])
+async def transaction():
     try:
         uid = request.json["uid"]
         type = request.json["type"]
@@ -103,31 +169,21 @@ def transaction():
         latitude = request.json["latitude"]
         longitude = request.json["longitude"]
 
-        if (uid):
-            client.db.transactions.insert_one({
-                "uid": uid,
-                "type": type,
-                "type_especify": type_especify,
-                "date": date,
-                "cash": cash,
-                "desc": desc,
-                "latitude": latitude,
-                "longitude": longitude
-            })
+        if (len(uid) > 0):
 
-            return make_response(jsonify(message='Transaction added successfully'))
-
+            await insert_transaction(uid, type, type_especify, date, cash, desc, latitude, longitude)
+            return make_response(jsonify(message=f'Transação do tipo {uid} added successfully'))
         else:
-            return bad_request()
+            return not_found()
     except:
-        return not_found()
+        return bad_request()
 
 
-@ application.route('/getTransaction', methods=['GET'])
-def get_transaction():
+@application.route('/getTransaction', methods=['GET'])
+async def get_transaction():
     try:
         uid = request.args.get('uid')
-        transactions = client.db.transactions.find({"uid": uid})
+        transactions = await transactionsDB(uid)
         response = json_util.dumps(transactions)
 
         return Response(response, mimetype='application/json')
@@ -136,8 +192,8 @@ def get_transaction():
         return not_found()
 
 
-@ application.route('/changeTransaction', methods=['PUT', 'DELETE'])
-def change_transaction():
+@application.route('/changeTransaction', methods=['PUT', 'DELETE'])
+async def change_transaction():
     try:
         id = request.json['_id']
         id = id['$oid']
@@ -151,18 +207,10 @@ def change_transaction():
         longitude = request.json["longitude"]
 
         if request.method == 'DELETE' and id:
-            client.db.transactions.delete_one({"_id": ObjectId(id)})
+            await remove_transaction_DB(id)
             return make_response(jsonify(message="Registro deletado!"))
         elif request.method == 'PUT' and id:
-            client.db.transactions.update_one({"_id": ObjectId(id)}, {"$set": {
-                "type": type,
-                "date": date,
-                "cash": cash,
-                "desc": desc,
-                "type_especify": type_especify,
-                "latitude": latitude,
-                "longitude": longitude
-            }})
+            await change_transaction_DB(id, type, date, cash, desc, type_especify, latitude, longitude)
             return make_response(jsonify(message="Registro alterado!"))
         else:
             return bad_request()
@@ -170,7 +218,7 @@ def change_transaction():
         return not_found()
 
 
-@ application.errorhandler(404)
+@application.errorhandler(404)
 def not_found(error=None):
     response = jsonify({
         'message': 'Resource not found: ' + request.url,
@@ -180,7 +228,7 @@ def not_found(error=None):
     return make_response(response)
 
 
-@ application.errorhandler(400)
+@application.errorhandler(400)
 def bad_request(error=None):
     response = jsonify({
         'message': 'Malformed request syntax, invalid request message framing, or misleading request routing ' + request.url,
