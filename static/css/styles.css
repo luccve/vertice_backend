@@ -3,6 +3,8 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  scroll-behavior: smooth;
+  background-color: #e3f9e5;
 }
 
 ul,
@@ -14,4 +16,128 @@ li {
 
 h1 {
   font-size: 52px;
+}
+
+#menu {
+  width: 100vw;
+  height: 3.5rem;
+  display: block;
+  margin: 0 auto;
+  position: fixed;
+  background-color: #aaa;
+}
+
+#menu ul {
+  display: flex;
+  width: 100vw;
+  align-content: center;
+  flex-direction: row;
+  justify-content: space-around;
+}
+#menu a {
+  text-decoration: none;
+  color: #000;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 1rem;
+}
+
+#menu a:hover {
+  background-color: #73df73;
+  border-radius: 0.5rem;
+  box-shadow: 0px 0px 10px #aaa;
+}
+
+#content {
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+  width: 80vw;
+  height: 100vh;
+}
+
+#rotas {
+  padding: 1rem;
+  background-color: #c7f2c9;
+}
+#rotas ul li {
+  padding-bottom: 3rem;
+  text-align: start;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  color: #000;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+#usercase {
+  padding: 1rem;
+  background-color: #abebae;
+}
+#usercase ul li h3 {
+  text-align: start;
+  font-size: 1.5rem;
+}
+
+#usercase ul li p {
+  background-color: #8fe58f;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 60vw;
+  margin: 0 auto;
+}
+
+#arquitetura {
+  padding: 1rem;
+  background-color: #73df73;
+}
+
+#arquitetura ul li {
+  padding: 1rem;
+  text-align: start;
+  font-weight: 600;
+  background-color: #afe9a9;
+  border-radius: 1rem;
+  margin: 1rem;
+}
+
+code {
+  background-color: #9e9e9e;
+
+  text-align: center !important;
+}
+
+.code {
+  width: 300px;
+  height: 5rem;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 2rem;
+  color: rgb(34, 6, 246) !important;
+  font-size: 0.8rem;
+}
+
+.elegant-shadow {
+  box-shadow: 0px 0px 10px #aaa;
+  border-radius: 10px;
+}
+
+.container {
+  width: 50vw;
+  margin: 0 auto;
+}
+.container p {
+  padding: 1rem;
+  background-color: #e3f9e5;
+  font-weight: bold;
+}
+
+#video {
+  padding: 1rem;
+  background-color: #46834c;
+  color: #fff;
 }

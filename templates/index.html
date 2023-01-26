@@ -11,13 +11,235 @@
     <title>API Lucasi DEV</title>
   </head>
   <body>
-    <ul>
-      <h1>Rotas da API</h1>
-      <li>/getTransaction -> GET</li>
-      <li>/cnpj -> GET</li>
-      <li>/user -> POST, PUT, DELETE</li>
-      <li>/transaction -> POST</li>
-      <li>/changeTransaction -> DEL, PUT</li>
-    </ul>
+    <nav id="menu">
+      <ul>
+        <li><a href="#rotas">informações das Rotas</a></li>
+        <li><a href="#usercase">Casos de uso</a></li>
+        <li><a href="#arquitetura">Arquitetura do projeto</a></li>
+        <li><a href="#video">Vídeo explicação do projeto</a></li>
+      </ul>
+    </nav>
+    <main id="content">
+      <section id="rotas">
+        <h1>Rotas da API</h1>
+        <ul>
+          <li>
+            /getUser - Essa rota é responsável por recuperar todas as
+            informações do usuário, usando o método HTTP GET. Ela deve receber
+            um parâmetro, chamado uid do usuário. A resposta será um json com as
+            informações do usuário.
+          </li>
+          <li>
+            /user - Essa rota é responsável por gerenciar as operações
+            relacionadas ao usuário, incluindo criar, atualizar e deletar
+            usuários. Ela pode usar os métodos HTTP POST, PUT e DELETE,
+            dependendo da operação a ser realizada. Os dados devem ser enviados
+            em um json no padrão a seguir:
+            <div class="code">
+              <code
+                >{ 'displayName': string, 'email': string, 'photoURL': string,
+                'sexo': string, 'uid': string}</code
+              >
+            </div>
+
+            A resposta pode ser um json de sucesso com as informações ou erro
+            com status 400 bad request ou 404 notfound.
+          </li>
+          <li>
+            /getTransaction - Essa rota é responsável por recuperar todas as
+            transação do usuário, usando o método HTTP GET. Ela deve receber um
+            parâmetro, chamado uid do usuário, para identificar qual transação
+            deve ser recuperada. A resposta será um json com as informações da
+            transação.
+          </li>
+          <li>
+            /cnpj - Essa rota é responsável por recuperar informações de um CNPJ
+            específico usando o método HTTP GET. Ela deve receber um parâmetro,
+            com um CNPJ válido, para identificar qual CNPJ deve ser recuperado.
+            A resposta será um json com informações do CNPJ.
+          </li>
+          <li>
+            /transaction - Essa rota é responsável por criar novas transações
+            usando o método HTTP POST. Ela deve receber informações em json, com
+            o seguinte padrão:
+            <div class="code">
+              <code
+                >{ "uid": string, "type": string, "type_especify": string,
+                "date": string, "cash": string, "desc": string, "latitude":
+                string, "longitude": string} </code
+              >.
+            </div>
+            Como o valor da transação, a data e o usuário associado à transação.
+            A resposta pode ser um json de sucesso ou erro.
+          </li>
+          <li>
+            /changeTransaction - Essa rota é responsável por atualizar ou
+            deletar uma transação existente. Ela pode usar os métodos HTTP PUT
+            ou DELETE, dependendo da operação a ser realizada. Ela deve receber
+            o seguinte padrão em json:
+            <div class="code">
+              <code
+                >{ "_id":string, "uid": string, "type": string, "type_especify":
+                string, "date": string, "cash": string, "desc": string,
+                "latitude": string, "longitude": string}</code
+              >.
+            </div>
+
+            A resposta pode ser uma mensagem de sucesso ou erro com status 400
+            ou 404.
+          </li>
+        </ul>
+      </section>
+      <section id="usercase">
+        <h1>Casos de usos do projeto VERTICE</h1>
+        <ul>
+          <li>
+            <h3>1 - Cadastrar usuários</h3>
+            <p class="elegant-shadow">
+              Este caso de uso permite que os usuários criem uma conta no
+              sistema, fornecendo e-mail e senha, ou se conectando via google.
+            </p>
+          </li>
+          <li>
+            <h3>2 - Autenticação</h3>
+            <p class="elegant-shadow">
+              Este caso de uso permite que os usuários se autentiquem no
+              sistema, geralmente fornecendo suas credenciais de login.
+            </p>
+          </li>
+          <li>
+            <h3>3 - Gerenciamento de perfil</h3>
+            <p class="elegant-shadow">
+              Este caso de uso permite que os usuários logados no sistemas
+              gerenciem suas informações de perfil, como alterar sua senha ou
+              atualizar seus dados de perfil.
+            </p>
+          </li>
+          <li>
+            <h3>4 - Gerenciamento de transações</h3>
+            <p class="elegant-shadow">
+              Este caso de uso permite que os usuários logados no sistema criem,
+              editem e excluam suas transações no sistema.
+            </p>
+          </li>
+          <li>
+            <h3>5 - Consulta de CNPJ</h3>
+            <p class="elegant-shadow">
+              Este caso de uso permite que os usuários busquem informações sobre
+              empresas comunicando o cnpj.
+            </p>
+          </li>
+          <li>
+            <h3>6 - Visualizar relatórios</h3>
+            <p class="elegant-shadow">
+              Este caso de uso permite que os usuários logados no sistema
+              visualizem o dashboard indicando gráficos das transaçoes
+              inseridas.
+            </p>
+          </li>
+          <li>
+            <h3>7 - Calculadora de receita</h3>
+            <p class="elegant-shadow">
+              Este caso de uso permite que os usuários calculem a sua receita na
+              abordagem 50/30/20.
+            </p>
+          </li>
+          <li>
+            <h3>8 - Consultar Disponibilidade de empréstimo</h3>
+            <p class="elegant-shadow">
+              Este caso de uso permite que os usuários logados no sistema receba
+              a informação que está apto para receber empréstimo bancários.
+            </p>
+          </li>
+          <li>
+            <h3>9 - Mudança do tema do site</h3>
+            <p class="elegant-shadow">
+              Este caso de uso permite que os usuários configurem o site no modo
+              noturno.
+            </p>
+          </li>
+          <li>
+            <h3>10 - Selecionar latitude e longitude da transação no mapa.</h3>
+            <p class="elegant-shadow">
+              Este caso de uso permite que os usuários ao clicar em um mapa
+              interativo faça que o sistema capiture as coordenadas e ao clicar
+              em salvar é adicionada ao banco de dados.
+            </p>
+          </li>
+        </ul>
+      </section>
+      <section id="arquitetura">
+        <h1>Arquitetura do projeto</h1>
+        <ul>
+          <li>
+            Vue.js é utilizado para construir a camada de interface do usuário
+            do aplicativo. Ele fornece recursos avançados de renderização de
+            componentes e gerenciamento de estado, tornando a interface do
+            usuário reativa e fácil de gerenciar.
+          </li>
+          <li>
+            O front-end é implementado como uma aplicação estática e é
+            implantado no GitHub Pages, permitindo uma fácil manutenção e
+            escalabilidade.
+          </li>
+          <li>
+            Flask é usado como o framework de back-end, responsável por lidar
+            com as requisições HTTP e fornecer as respostas apropriadas ao
+            front-end. Ele também é responsável por gerenciar as operações de
+            banco de dados.
+          </li>
+          <li>
+            MongoDB é utilizado como o banco de dados para armazenar e recuperar
+            informações do usuário e dos dados do aplicativo. Ele é conectado ao
+            Flask através de um driver, permitindo que o aplicativo execute
+            operações CRUD (criar, ler, atualizar e deletar) nos dados.
+          </li>
+          <li>
+            Firebase Auth é utilizado para gerenciar a autenticação e
+            autorização dos usuários. Ele permite que os usuários criem uma
+            conta e façam login com suas credenciais, além de gerenciar a
+            recuperação de senha e outras funcionalidades de segurança.
+          </li>
+          <li>
+            A instância EC2 na AWS é utilizada como a plataforma de hospedagem
+            para o aplicativo Flask e o banco de dados MongoDB. Ela fornece a
+            escalabilidade, segurança e gerenciamento de recursos necessários
+            para o aplicativo.
+          </li>
+        </ul>
+        <div class="container">
+          <h2>O projeto conta com uma arquitetura de três camadas:</h2>
+          <p class="elegant-shadow">
+            Apresentação, negócios e dados. Na camada de apresentação, o Vue.js
+            é utilizado para construir a interface do usuário e publicado no
+            GithubPages. Na camada de negócios, o Flask é utilizado para
+            construir o back-end do aplicativo e instanciado na AWS EC2. E na
+            camada de dados, o MongoDB é utilizado como banco de dados e o
+            Firebase Auth como sistema de autenticação. Essa arquitetura permite
+            uma boa separação entre as camadas, facilitando a manutenção e
+            escalabilidade do aplicativo. A camada de apresentação é responsável
+            por exibir a informação para o usuário e obter suas ações, a camada
+            de negócios é responsável por processar as ações do usuário e obter
+            ou armazenar informações no banco de dados e a camada de dados é
+            responsável por armazenar e recuperar informações persistentes.
+          </p>
+        </div>
+
+        <div class="image">
+          <img src="" alt="" />
+        </div>
+      </section>
+      <section id="video">
+        <div>
+          <h1>Explicando o projeto</h1>
+          <iframe
+            width="420"
+            height="315"
+            src="https://www.youtube.com/embed/tgbNymZ7vqY?controls=0"
+          >
+          </iframe>
+        </div>
+      </section>
+    </main>
   </body>
 </html>
