@@ -5,20 +5,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
+      rel="shortcut icon"
+      href="{{url_for('static',filename='image/favicon.jpeg')}}"
+      type="image/x-icon"
+    />
+    <link
       rel="stylesheet"
       href="{{url_for('static',filename='css/styles.css')}}"
     />
     <title>API Lucasi DEV</title>
   </head>
-  <body>
+
+  <header>
     <nav id="menu">
       <ul>
-        <li><a href="#rotas">informações das Rotas</a></li>
-        <li><a href="#usercase">Casos de uso</a></li>
-        <li><a href="#arquitetura">Arquitetura do projeto</a></li>
-        <li><a href="#video">Vídeo explicação do projeto</a></li>
+        <li><a href="#rotas">Rotas</a></li>
+        <li><a href="#usercase">Casos</a></li>
+        <li><a href="#arquitetura">Arquitetura</a></li>
+        <li><a href="#video">Vídeo</a></li>
       </ul>
     </nav>
+  </header>
+  <body>
     <main id="content">
       <section id="rotas">
         <h1>Rotas da API</h1>
@@ -71,6 +79,18 @@
             </div>
             Como o valor da transação, a data e o usuário associado à transação.
             A resposta pode ser um json de sucesso ou erro.
+          </li>
+          <li>
+            /prediction - Essa rota é responsável por atualizar ou deletar uma
+            transação existente. Ela deve usar os métodos GET, dependendo da
+            operação a ser realizada. Ela deve receber o seguinte padrão em
+            json:
+            <div class="code">
+              <code>{ "incoming":number, "age": number, "loan": number} </code>.
+            </div>
+
+            A resposta de sucesso é um objeto informando se o usuário foi
+            aprovado ou negado, ou erro com status 400 ou 404.
           </li>
           <li>
             /changeTransaction - Essa rota é responsável por atualizar ou
@@ -170,50 +190,61 @@
       </section>
       <section id="arquitetura">
         <h1>Arquitetura do projeto</h1>
-        <ul>
-          <li>
-            Vue.js é utilizado para construir a camada de interface do usuário
-            do aplicativo. Ele fornece recursos avançados de renderização de
-            componentes e gerenciamento de estado, tornando a interface do
-            usuário reativa e fácil de gerenciar.
-          </li>
-          <li>
-            O front-end é implementado como uma aplicação estática e é
-            implantado no GitHub Pages, permitindo uma fácil manutenção e
-            escalabilidade.
-          </li>
-          <li>
-            Flask é usado como o framework de back-end, responsável por lidar
-            com as requisições HTTP e fornecer as respostas apropriadas ao
-            front-end. Ele também é responsável por gerenciar as operações de
-            banco de dados.
-          </li>
-          <li>
-            MongoDB é utilizado como o banco de dados para armazenar e recuperar
-            informações do usuário e dos dados do aplicativo. Ele é conectado ao
-            Flask através de um driver, permitindo que o aplicativo execute
-            operações CRUD (criar, ler, atualizar e deletar) nos dados.
-          </li>
-          <li>
-            Firebase Auth é utilizado para gerenciar a autenticação e
-            autorização dos usuários. Ele permite que os usuários criem uma
-            conta e façam login com suas credenciais, além de gerenciar a
-            recuperação de senha e outras funcionalidades de segurança.
-          </li>
-          <li>
-            A instância EC2 na AWS é utilizada como a plataforma de hospedagem
-            para o aplicativo Flask e o banco de dados MongoDB. Ela fornece a
-            escalabilidade, segurança e gerenciamento de recursos necessários
-            para o aplicativo.
-          </li>
-        </ul>
+        <div class="lista">
+          <ul>
+            <li>
+              Vue.js é utilizado para construir a camada de interface do usuário
+              do aplicativo. Ele fornece recursos avançados de renderização de
+              componentes e gerenciamento de estado, tornando a interface do
+              usuário reativa e fácil de gerenciar.
+            </li>
+            <li>
+              O front-end é implementado como uma aplicação estática e é
+              implantado no GitHub Pages, permitindo uma fácil manutenção e
+              escalabilidade.
+            </li>
+            <li>
+              Flask é usado como o framework de back-end, responsável por lidar
+              com as requisições HTTP e fornecer as respostas apropriadas ao
+              front-end. Ele também é responsável por gerenciar as operações de
+              banco de dados.
+            </li>
+            <li>
+              MongoDB é utilizado como o banco de dados para armazenar e
+              recuperar informações do usuário e dos dados do aplicativo. Ele é
+              conectado ao Flask através de um driver, permitindo que o
+              aplicativo execute operações CRUD (criar, ler, atualizar e
+              deletar) nos dados.
+            </li>
+            <li>
+              Firebase Auth é utilizado para gerenciar a autenticação e
+              autorização dos usuários. Ele permite que os usuários criem uma
+              conta e façam login com suas credenciais, além de gerenciar a
+              recuperação de senha e outras funcionalidades de segurança.
+            </li>
+            <li>
+              A instância EC2 na AWS é utilizada como a plataforma de hospedagem
+              para o aplicativo Flask e o banco de dados MongoDB. Ela fornece a
+              escalabilidade, segurança e gerenciamento de recursos necessários
+              para o aplicativo.
+            </li>
+            <li>
+              Existe um servidor local utilizando o Flask contando com um modelo
+              de aprendizado de máquina treinado para avaliar se um usário tem
+              um empréstimo aprovado ou negado.
+            </li>
+          </ul>
+        </div>
         <div class="container">
-          <h2>O projeto conta com uma arquitetura de três camadas:</h2>
+          <h2>O projeto conta com uma arquitetura em quatro camadas:</h2>
           <p class="elegant-shadow">
-            Apresentação, negócios e dados. Na camada de apresentação, o Vue.js
-            é utilizado para construir a interface do usuário e publicado no
-            GithubPages. Na camada de negócios, o Flask é utilizado para
-            construir o back-end do aplicativo e instanciado na AWS EC2. E na
+            Apresentação, negócios, persistencia e dados. Na camada de
+            apresentação, o Vue.js é utilizado para construir a interface do
+            usuário e publicado no GithubPages. Na camada de negócios, o Flask é
+            utilizado para construir o back-end do aplicativo e instanciado na
+            AWS EC2. Na camada de persistencia utilizamos um modelo de
+            aprendizado de máquina treinado em um servidor local com Flask, para
+            avaliar se um usuário tem um empréstimo aprovado ou negado. E na
             camada de dados, o MongoDB é utilizado como banco de dados e o
             Firebase Auth como sistema de autenticação. Essa arquitetura permite
             uma boa separação entre as camadas, facilitando a manutenção e
@@ -226,7 +257,47 @@
         </div>
 
         <div class="image">
-          <img src="" alt="" />
+          <h2>Imagem arquitetura</h2>
+          <img
+            src="{{url_for('static',filename='image/arquitetura.png')}}"
+            alt="Imagem arquitetura"
+          />
+        </div>
+        <div class="repositorio">
+          <h2>Repositório no github</h2>
+          <a href="https://github.com/luccve/vue-project/" target="_blank"
+            >Repositório front-end</a
+          >
+          <a href="https://github.com/luccve/vertice_backend" target="_blank"
+            >Repositório Back-end</a
+          >
+          <a
+            href="https://github.com/Viny-lima/my_docker_deploy_ml"
+            target="_blank"
+            >Repositório prediction model</a
+          >
+        </div>
+
+        <div class="desenvolvedores">
+          <h2>Desenvolvedores</h2>
+          <div class="perfil">
+            <h4>Estevão Lucas</h4>
+
+            <a href="https://github.com/luccve/" target="_blank">
+              <img
+                src="https://avatars.githubusercontent.com/luccve"
+                alt="Estevão Lucas desenvolvedor"
+            /></a>
+          </div>
+          <div class="perfil">
+            <h4>Vinicius Lima</h4>
+
+            <a href="https://github.com/Viny-lima/" target="_blank">
+              <img
+                src="https://avatars.githubusercontent.com/viny-lima"
+                alt="Vinicius Lima desenvolvedor"
+            /></a>
+          </div>
         </div>
       </section>
       <section id="video">

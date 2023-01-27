@@ -98,7 +98,7 @@ def db():
                                  data="Todo os banco de dados foi dropado"))
 
 
-@application.route('/', methods=['GET'])
+@application.route('/vertice/docs', methods=['GET'])
 def host():
 
     return render_template('index.html')
