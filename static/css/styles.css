@@ -47,8 +47,8 @@ h1 {
 }
 
 iframe {
-  width: 80%;
-  height: auto;
+  width: 60%;
+  height: 500px;
 }
 
 .image img {
@@ -270,5 +270,9 @@ code {
     padding: 2rem;
     color: rgb(34, 6, 246) !important;
     font-size: 0.8rem;
+  }
+  iframe {
+    width: 200px;
+    height: 200px;
   }
 }
