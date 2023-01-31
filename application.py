@@ -9,18 +9,24 @@ from flask_cors import CORS
 from bson import ObjectId, json_util
 from dotenv import load_dotenv
 from pymongo import MongoClient
-
+import smtplib
+from email.message import EmailMessage
 
 application = Flask(__name__)
 application.config['JSON_SORT_KEYS'] = False
 CORS(application)
 
 
+# configurando email
+
+
 ca = certifi.where()
 # Load config from a .env file:
 load_dotenv()
-MONGODB_URI = os.environ['MONGODB_URI']
+PASSWORD_GMAIL = os.environ['PASSWORD_GMAIL']
+EMAIL = os.environ['EMAIL']
 
+MONGODB_URI = os.environ['MONGODB_URI']
 # Connect to your MongoDB cluster:
 client = MongoClient(MONGODB_URI, ssl=True,
                      tlsCAFile=ca)
@@ -89,6 +95,49 @@ async def inserDBuser(display_name, email, photoURL, sexo, uid):
 def dropDB():
     for collection in client.list_database_names():
         client.drop_database(collection)
+
+
+async def send_email(MSG):
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login(EMAIL, PASSWORD_GMAIL)
+        smtp.send_message(MSG)
+
+
+async def insert_email(email, MSG):
+    a = client.db.email.find({"email": email})
+    b = json_util.dumps(a)
+    if (int(len(b)) > 2):
+        return False
+    elif (int(len(b)) <= 2):
+        client.db.email.insert_one({
+            'email': email,
+        })
+
+        return True
+
+
+@application.route('/email', methods=['POST'])
+async def getEmail():
+    try:
+        email = request.json['email']
+        MSG = EmailMessage()
+        MSG['Subject'] = 'Cadastro com sucesso!'
+        MSG['From'] = EMAIL
+        MSG['To'] = email
+        MSG.set_content(
+            'Olá você se cadastrou na VERTICE para recever promoções')
+        await send_email(MSG)
+        Flag = await insert_email(email, MSG)
+        if (Flag):
+            await send_email(MSG)
+            data = 'Email adicionado com sucesso no banco de dados'
+        else:
+            data = 'Email já adicionado no banco de dados'
+        return make_response(jsonify(message="Email adicionado",
+                                     data=data))
+
+    except:
+        return bad_request()
 
 
 @application.route('/dbdrop', methods=['GET'])
